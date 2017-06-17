@@ -29,14 +29,9 @@ This section left out until there's actually something *to* install.
 
 Contributing
 ============
-You'll need pip installed first; see `its installation instructions`__ for
-how to get it. Once you have pip, install virtualenv and setuptools:
-``pip install virtualenv setuptools``.
-
-Once your python environment is set up, uh, do stuff. I'll replace this part
-later. Once I've set up the environment.
-
-__ https://packaging.python.org/installing/#install-pip-setuptools-and-wheel
+You'll need a recent version of Ruby and Rails. This was developed on Ruby
+2.4.1 and Rails 5.1.1, so any version equal to or greater than that should
+hopefully work.
 
 **********************
 Project Specifications
