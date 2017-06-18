@@ -10,15 +10,15 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170618140924) do
+ActiveRecord::Schema.define(version: 20170618000931) do
 
   create_table "certificates", primary_key: "serial", force: :cascade do |t|
-    t.boolean "valid"
-    t.string "path"
-    t.integer "user_id"
+    t.boolean "valid", null: false
+    t.string "path", null: false
+    t.integer "user_id", null: false
+    t.datetime "valid_until", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.datetime "valid_until"
     t.index ["user_id"], name: "index_certificates_on_user_id"
   end
 
