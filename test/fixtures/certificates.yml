@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  serial: 
+  valid: false
+  path: MyString
+  user: one
+
+two:
+  serial: 
+  valid: false
+  path: MyString
+  user: two
