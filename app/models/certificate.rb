@@ -10,5 +10,6 @@ end
 
 # Certificate model
 class Certificate < ApplicationRecord
+  self.primary_key = 'serial'
   belongs_to :user
 end
