@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170618000931) do
+ActiveRecord::Schema.define(version: 20170714043702) do
 
   create_table "certificates", primary_key: "serial", force: :cascade do |t|
     t.boolean "valid", null: false
@@ -22,12 +22,22 @@ ActiveRecord::Schema.define(version: 20170618000931) do
     t.index ["user_id"], name: "index_certificates_on_user_id"
   end
 
+  create_table "email_validations", force: :cascade do |t|
+    t.string "code"
+    t.integer "user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_email_validations_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email_address", null: false
     t.string "name", null: false
     t.string "password", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "admin"
+    t.boolean "validated"
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
   end
 

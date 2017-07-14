@@ -39,3 +39,9 @@ end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
+
+# redis, because it solves the problem of cross-domain sessions
+gem 'redis-rails'
+
+# passenger, because we need to serve this _somehow_
+gem "passenger", ">= 5.0.25", require: "phusion_passenger/rack_handler"
