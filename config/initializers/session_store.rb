@@ -6,7 +6,7 @@ Rails.application.config.session_store :redis_store, {
       host: 'localhost',
       port: 6379,
       db: 0,
-      password: 'secret',
+      password: 'secret', # Change this to something random
       namespace: 'cache'
     }
   ],
