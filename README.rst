@@ -23,6 +23,19 @@ desire.
 This README will function also as a specification document: the needed and
 planned functionality will be listed here, below.
 
+Prerequisites
+=============
+
+Required to properly run the application:
+
+* Ruby >= 2.4.1 (earlier versions may, but are not guaranteed to, work)
+* Rails >= 5.1.1 (same note regarding earlier versions)
+* Postgresql
+* Redis
+
+You will also need to create your ``secrets.yml`` file to run the server; see
+``config/secrets.yml.example`` for an example.
+
 Installation
 ============
 This section left out until there's actually something *to* install.
