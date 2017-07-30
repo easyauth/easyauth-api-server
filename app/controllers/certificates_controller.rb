@@ -61,17 +61,6 @@ class CertificatesController < ApplicationController
 
   private
 
-  def require_auth
-    api_user_id = validate_api_key(params[:apikey])
-    unless api_user_id
-      render json: {
-        error: 'Unauthorized'
-      }, status: 401
-      return
-    end
-    @apiuser = User.find(api_user_id)
-  end
-
   # Use callbacks to share common setup or constraints between actions.
   def set_certificate
     @certificate = Certificate.find(params[:serial])

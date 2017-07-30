@@ -2,13 +2,13 @@
 class LoginController < ApplicationController
   # Allows a user to log in
   def login
-    if params[:email_address].nil? || params[:password].nil?
+    if params[:email].nil? || params[:password].nil?
       @error = 'Must specify username and password'
       render status: 401
       return
     end
 
-    user = User.find_by(email_address: params[:email_address])
+    user = User.find_by(email: params[:email])
     unless user && user.authenticate(params[:password])
       @error = 'Incorrect username or password'
       render status: 401
