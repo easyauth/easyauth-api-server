@@ -1,7 +1,5 @@
 # Handles logging in and extending API key validity
 class LoginController < ApplicationController
-  include APIKey
-
   # Allows a user to log in
   def login
     if params[:email_address].nil? || params[:password].nil?
