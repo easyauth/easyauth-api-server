@@ -1,5 +1,7 @@
+# Dispatch users
 class UsersController < ApplicationController
-  before_action :set_user, only: [:show, :update, :destroy]
+  before_action :set_user, only: %i[show update destroy]
+  before_action :require_auth, only: %i[index show update destroy]
   before_action :set_default_request_format
 
   def set_default_request_format
@@ -9,12 +11,26 @@ class UsersController < ApplicationController
   # GET /users
   # GET /users.json
   def index
-    @users = User.all
+    unless @apiuser.admin?
+      render json: { status: 'error', error: 'Forbidden' }, status: 403
+      return
+    end
+    @users = if params[:start].nil?
+               User.limit(100)
+             else
+               User.limit(100).offset(params[:start].to_i)
+             end
   end
 
   # GET /users/1
   # GET /users/1.json
   def show
+    unless @apiuser.id == @user.id || @apiuser.admin?
+      render json: { 
+        status: 'error', 
+        error: 'Forbidden' 
+      }, status: 403
+    end
   end
 
   # POST /users
@@ -35,7 +51,20 @@ class UsersController < ApplicationController
   # PATCH/PUT /users/1
   # PATCH/PUT /users/1.json
   def update
-    if @user.update(user_params)
+    unless (@apiuser.id == @user.id && !params[:admin].nil?) ||
+           !@apiuser.admin?
+      render json: {
+        status: 'error',
+        error: 'Forbidden'
+      }, status: 403
+      return
+    end
+
+    unless params[:validation_code].nil?
+      return unless validate_user_email
+    end
+
+    if @user.save
       render :show, status: :ok, location: @user
     else
       render json: @user.errors, status: :unprocessable_entity
@@ -45,11 +74,31 @@ class UsersController < ApplicationController
   # DELETE /users/1
   # DELETE /users/1.json
   def destroy
+    unless @apiuser.id == @user.id || @apiuser.admin?
+      render json: {
+        status: 'error',
+        error: 'Forbidden'
+      }, status: 403
+    end
     @user.destroy
   end
 
   private
-  
+
+  def validate_user_email
+    validation_code = EmailValidation.find_by(code: params[:validation_code])
+    if validation_code.nil? || validation_code.user.id != @apiuser.id
+      render json: {
+        status: 'error',
+        error: 'Bad validation code'
+      }, status: 422
+      return
+    end
+
+    @user.validated = true
+    validation_code.destroy
+  end
+
   # Use callbacks to share common setup or constraints between actions.
   def set_user
     @user = User.find(params[:id])

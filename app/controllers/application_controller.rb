@@ -7,6 +7,7 @@ class ApplicationController < ActionController::API
     api_user_id = validate_api_key(params[:apikey])
     unless api_user_id
       render json: {
+        status: 'error',
         error: 'Unauthorized'
       }, status: 401
       return
