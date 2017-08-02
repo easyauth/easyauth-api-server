@@ -42,7 +42,8 @@ class UsersController < ApplicationController
                      validated: false)
 
     if @user.save
-      render :show, status: :created, location: @user
+      EmailValidation.generate(@user, EmailValidationsTypes::CREATE)
+      render :show, status: :accepted, location: @user
     else
       render json: @user.errors, status: :unprocessable_entity
     end
@@ -80,23 +81,25 @@ class UsersController < ApplicationController
         error: 'Forbidden'
       }, status: 403
     end
+    validations = email_validation.where(user: @user)
+    validations.each(&:destroy)
     @user.destroy
   end
 
   private
 
   def validate_user_email
-    validation_code = EmailValidation.find_by(code: params[:validation_code])
-    if validation_code.nil? || validation_code.user.id != @apiuser.id
+    validation = EmailValidation.find_by(code: params[:validation_code])
+    if validation.nil? || validation.user.id != @apiuser.id
       render json: {
-        status: 'error',
-        error: 'Bad validation code'
+        status: 'error', error: 'Bad validation code'
       }, status: 422
       return
     end
 
     @user.validated = true
-    validation_code.destroy
+    @user.email = validation.new_email unless validation.new_email.nil?
+    validation.destroy
   end
 
   # Use callbacks to share common setup or constraints between actions.
