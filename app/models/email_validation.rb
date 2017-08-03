@@ -12,7 +12,7 @@ class EmailValidation < ApplicationRecord
       new_email: new_email
     )
     validation.save
-    NewUserMailer.welcome_email(user, validation)
+    ValidationMailer.welcome_email(user, validation)
   end
 end
 

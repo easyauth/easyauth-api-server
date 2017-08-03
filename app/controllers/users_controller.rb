@@ -61,12 +61,18 @@ class UsersController < ApplicationController
       return
     end
 
-    unless params[:validation_code].nil?
-      return unless validate_user_email
+    if !params[:validation_code].nil?
+      return unless (@action = validate_user)
     end
 
-    if @user.save
-      render :show, status: :ok, location: @user
+    update_user
+
+    if (defined? @action) && @action == EmailValidationsTypes.DELETE
+      validations = email_validation.where(user: @user)
+      validations.each(&:destroy)
+      @user.destroy
+    elsif @user.save
+      render :show, status: (if params[:email].nil? then :ok else :accepted), location: @user
     else
       render json: @user.errors, status: :unprocessable_entity
     end
@@ -81,25 +87,33 @@ class UsersController < ApplicationController
         error: 'Forbidden'
       }, status: 403
     end
-    validations = email_validation.where(user: @user)
-    validations.each(&:destroy)
-    @user.destroy
+    validation.generate(@user, EmailValidationsTypes::DELETE)
+    render :show, status: :accepted, location: @user
   end
 
   private
 
-  def validate_user_email
+  def validate_user
     validation = EmailValidation.find_by(code: params[:validation_code])
     if validation.nil? || validation.user.id != @apiuser.id
       render json: {
         status: 'error', error: 'Bad validation code'
       }, status: 422
-      return
+      return false
     end
 
-    @user.validated = true
-    @user.email = validation.new_email unless validation.new_email.nil?
-    validation.destroy
+    if validation.action == EmailValidationsTypes::CREATE ||
+       validation.action == EmailValidationsTypes::CHANGE
+      @user.validated = true
+      @user.email = validation.new_email if validation.action == EmailValidationsTypes::CHANGE
+    end
+    validation.action
+  end
+
+  def update_user
+    EmailValidation.generate(@user, EmailValidationsTypes::CHANGE, params[:email]) unless params[:email].nil?
+    @user.name = params[:name] unless params[:name].nil?
+    @user.password = params[:password] unless params[:password].nil?
   end
 
   # Use callbacks to share common setup or constraints between actions.
