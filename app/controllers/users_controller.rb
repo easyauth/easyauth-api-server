@@ -67,8 +67,8 @@ class UsersController < ApplicationController
 
     update_user
 
-    if (defined? @action) && @action == EmailValidationsTypes.DELETE
-      validations = email_validation.where(user: @user)
+    if (defined? @action) && @action == EmailValidationsTypes::DELETE
+      validations = EmailValidation.where(user: @user)
       validations.each(&:destroy)
       @user.destroy
     elsif @user.save
@@ -91,7 +91,7 @@ class UsersController < ApplicationController
         error: 'Forbidden'
       }, status: 403
     end
-    validation.generate(@user, EmailValidationsTypes::DELETE)
+    EmailValidation.generate(@user, EmailValidationsTypes::DELETE)
     render :show, status: :accepted, location: @user
   end
 
