@@ -26,9 +26,9 @@ class UsersController < ApplicationController
   # GET /users/1.json
   def show
     unless @apiuser.id == @user.id || @apiuser.admin?
-      render json: { 
-        status: 'error', 
-        error: 'Forbidden' 
+      render json: {
+        status: 'error',
+        error: 'Forbidden'
       }, status: 403
     end
   end
@@ -61,7 +61,7 @@ class UsersController < ApplicationController
       return
     end
 
-    if !params[:validation_code].nil?
+    unless params[:validation_code].nil?
       return unless (@action = validate_user)
     end
 
@@ -72,7 +72,11 @@ class UsersController < ApplicationController
       validations.each(&:destroy)
       @user.destroy
     elsif @user.save
-      render :show, status: (if params[:email].nil? then :ok else :accepted), location: @user
+      render :show, status: if params[:email].nil?
+                              :ok
+                            else
+                              :accepted
+                            end, location: @user
     else
       render json: @user.errors, status: :unprocessable_entity
     end

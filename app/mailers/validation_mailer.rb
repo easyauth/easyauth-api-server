@@ -10,7 +10,7 @@ class ValidationMailer < ApplicationMailer
   end
 
   def update_email(user, email_validation)
-  	@user = user
+    @user = user
     @code = email_validation.code
     mail(
       to: @user.email,
@@ -19,7 +19,7 @@ class ValidationMailer < ApplicationMailer
   end
 
   def goodbye_email(user, email_validation)
-  	@user = user
+    @user = user
     @code = email_validation.code
     mail(
       to: @user.email,
