@@ -1,0 +1,11 @@
+redis:
+  # Uncomment path to use a socket
+  # all other redis paramaters will be ignored
+  # redis_path: /tmp/redis.sock
+  host: localhost # The hostname for redis
+  port: 6379 # The port redis is running on
+  db: 0 # The redis db to use
+  # Uncomment password if you use authentication.
+  # It's recommended to put this in config/settings.local.yml or an
+  # environment-specific config file like config/settings/development.local.yml.
+  # password: password

@@ -2,10 +2,10 @@
 default: &default
   adapter: postgresql
   encoding: unicode
-  database: <%= Rails.application.secrets.db_name %>
+  database: <%= Settings.db.name %>
   pool: 5
-  username: <%= Rails.application.secrets.db_user %>
-  password: <%= Rails.application.secrets.db_pass %>
+  username: <%= Settings.db.user %>
+  password: <%= Settings.db.pass %>
 
 development:
   <<: *default
