@@ -7,5 +7,22 @@ redis:
   db: 0 # The redis db to use
   # Uncomment password if you use authentication.
   # It's recommended to put this in config/settings.local.yml or an
-  # environment-specific config file like config/settings/development.local.yml.
+  # environment-specific config file like config/settings/development.local.yml
   # password: password
+
+# CA configuration can be moved to or overridden by an environment-specific 
+# config file if desired
+ca:
+  # The private key used to issue new certificates
+  private_key: /var/easyauth/private/privkey.pem
+
+  # The password for an encrypted private key
+  # It's better to use the environment for this:
+  # `export EASYAUTH_PRIVATE_KEY_PASSWORD=pass`
+  # private_key_password: pass
+
+  # The directory where issued certificates are stored
+  store_dir: /var/easyauth/store
+
+  # The location of the certificate revocation list:
+  crl_file: /var/easyauth/crl.pem
