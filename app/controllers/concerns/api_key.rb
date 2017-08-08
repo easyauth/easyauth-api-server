@@ -23,6 +23,10 @@ module APIKey
     expires
   end
 
+  def delete_api_key(key)
+    redis.del(key)
+  end
+
   private
 
   def redis

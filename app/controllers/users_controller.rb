@@ -26,9 +26,9 @@ class UsersController < ApplicationController
   # GET /users/1.json
   def show
     unless @apiuser.id == @user.id || @apiuser.admin?
-      render json: { 
-        status: 'error', 
-        error: 'Forbidden' 
+      render json: {
+        status: 'error',
+        error: 'Forbidden'
       }, status: 403
     end
   end
@@ -42,7 +42,8 @@ class UsersController < ApplicationController
                      validated: false)
 
     if @user.save
-      render :show, status: :created, location: @user
+      EmailValidation.generate(@user, EmailValidationsTypes::CREATE)
+      render :show, status: :accepted, location: @user
     else
       render json: @user.errors, status: :unprocessable_entity
     end
@@ -61,11 +62,21 @@ class UsersController < ApplicationController
     end
 
     unless params[:validation_code].nil?
-      return unless validate_user_email
+      return unless (@action = validate_user)
     end
 
-    if @user.save
-      render :show, status: :ok, location: @user
+    update_user
+
+    if (defined? @action) && @action == EmailValidationsTypes::DELETE
+      validations = EmailValidation.where(user: @user)
+      validations.each(&:destroy)
+      @user.destroy
+    elsif @user.save
+      render :show, status: if params[:email].nil?
+                              :ok
+                            else
+                              :accepted
+                            end, location: @user
     else
       render json: @user.errors, status: :unprocessable_entity
     end
@@ -80,23 +91,33 @@ class UsersController < ApplicationController
         error: 'Forbidden'
       }, status: 403
     end
-    @user.destroy
+    EmailValidation.generate(@user, EmailValidationsTypes::DELETE)
+    render :show, status: :accepted, location: @user
   end
 
   private
 
-  def validate_user_email
-    validation_code = EmailValidation.find_by(code: params[:validation_code])
-    if validation_code.nil? || validation_code.user.id != @apiuser.id
+  def validate_user
+    validation = EmailValidation.find_by(code: params[:validation_code])
+    if validation.nil? || validation.user.id != @apiuser.id
       render json: {
-        status: 'error',
-        error: 'Bad validation code'
+        status: 'error', error: 'Bad validation code'
       }, status: 422
-      return
+      return false
     end
 
-    @user.validated = true
-    validation_code.destroy
+    if validation.action == EmailValidationsTypes::CREATE ||
+       validation.action == EmailValidationsTypes::CHANGE
+      @user.validated = true
+      @user.email = validation.new_email if validation.action == EmailValidationsTypes::CHANGE
+    end
+    validation.action
+  end
+
+  def update_user
+    EmailValidation.generate(@user, EmailValidationsTypes::CHANGE, params[:email]) unless params[:email].nil?
+    @user.name = params[:name] unless params[:name].nil?
+    @user.password = params[:password] unless params[:password].nil?
   end
 
   # Use callbacks to share common setup or constraints between actions.
