@@ -2,8 +2,8 @@
 class CertificateValidator < ActiveModel::Validator
   def validate(record)
     if User.joins(:certificates)
-           .where(certificates: { valid: true, user: record.user })
-      record.errors[:user] << 'User can only have one valid certificate!'
+           .where(certificates: { active: true, user: record.user })
+      record.errors[:user] << 'User can only have one active certificate!'
     end
   end
 end

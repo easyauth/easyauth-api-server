@@ -2,6 +2,7 @@
 class CertificatesController < ApplicationController
   before_action :set_default_request_format
   before_action :require_auth, only: %i[show create update destroy]
+  before_action :check_current_cert, only: %i[create]
   before_action :set_certificate, only: %i[show update destroy]
 
   def set_default_request_format
@@ -34,7 +35,9 @@ class CertificatesController < ApplicationController
   # POST /certificates
   # POST /certificates.json
   def create
-    @certificate = Certificate.new(certificate_params)
+    csr = OpenSSL::X509::Request.new params[:csr]
+
+    @certificate = ca.sign_csr(csr, @apiuser)
 
     if @certificate.save
       render :show, status: :created, location: @certificate
@@ -56,10 +59,28 @@ class CertificatesController < ApplicationController
   # DELETE /certificates/1
   # DELETE /certificates/1.json
   def destroy
-    @certificate.destroy
+    if @apiuser.admin?
+      @certificate.destroy
+    else
+      render json: {
+        status: 'error',
+        reason: 'forbidden'
+      }, status: :forbidden
+    end
   end
 
   private
+
+  # Render 422 if a user still has an old certificate when creating a new one
+  def check_current_cert
+    results = Certificate.where(user: @apiuser, active: true)
+    return unless results.exists?
+    render json: {
+      status: 'error',
+      reason: 'Unrevoked certificate',
+      revoke_url: url_for(results.first)
+    }, status: :unprocessable_entity
+  end
 
   # Use callbacks to share common setup or constraints between actions.
   def set_certificate
@@ -71,7 +92,7 @@ class CertificatesController < ApplicationController
     params.fetch(:certificate, {})
   end
 
-  def redis
-    Redis.current
+  def ca
+    CA.instance
   end
 end

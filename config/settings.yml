@@ -14,15 +14,20 @@ redis:
 # config file if desired
 ca:
   # The private key used to issue new certificates
-  private_key: /var/easyauth/private/privkey.pem
+  key_file: /var/easyauth/private/privkey.pem
+  # The CA certificate itself
+  cert_file: /var/easyauth/private/ca.pem
 
   # The password for an encrypted private key
   # It's better to use the environment for this:
-  # `export EASYAUTH_PRIVATE_KEY_PASSWORD=pass`
-  # private_key_password: pass
+  # `export EASYAUTH__CA__KEY_PASSWORD=pass`
+  # key_password: pass
 
   # The directory where issued certificates are stored
   store_dir: /var/easyauth/store
 
   # The location of the certificate revocation list:
   crl_file: /var/easyauth/crl.pem
+
+  # The location of the file where the last issued serial is kept
+  serial_file: /var/easyauth/serial
