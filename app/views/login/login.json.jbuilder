@@ -5,4 +5,5 @@ else
   json.status 'success'
   json.apikey @apikey
   json.expires @expires
+  json.user user_url @user
 end

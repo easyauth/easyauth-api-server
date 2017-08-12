@@ -43,7 +43,10 @@ class UsersController < ApplicationController
 
     if @user.save
       EmailValidation.generate(@user, EmailValidationsTypes::CREATE)
-      render :show, status: :accepted, location: @user
+      render json: {
+        status: 'queued',
+        url: user_url(@user) 
+      }, status: :accepted
     else
       render json: @user.errors, status: :unprocessable_entity
     end
@@ -53,7 +56,7 @@ class UsersController < ApplicationController
   # PATCH/PUT /users/1.json
   def update
     unless (@apiuser.id == @user.id && !params[:admin].nil?) ||
-           !@apiuser.admin?
+           @apiuser.admin?
       render json: {
         status: 'error',
         error: 'Forbidden'
@@ -123,6 +126,12 @@ class UsersController < ApplicationController
   # Use callbacks to share common setup or constraints between actions.
   def set_user
     @user = User.find(params[:id])
+    results = Certificate.where(user: @user, active: true)
+    @certificate = if results.any?
+                     certificate_url(results.first)
+                   else
+                     nil
+                   end
   end
 
   def redis

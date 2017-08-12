@@ -1,1 +1,4 @@
-json.partial! "users/user", user: @user
+json.status 'success'
+json.user do 
+	json.partial! "users/user", user: @user
+end
