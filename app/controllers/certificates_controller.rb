@@ -29,18 +29,7 @@ class CertificatesController < ApplicationController
       }, status: 403
     end
     respond_to do |format|
-      format.json do 
-        render json: {
-          status: 'success',
-          certificate: {
-            serial: @certificate.id,
-            valid: @certificate.active?,
-            valid_until: @certificate.valid_until,
-            user: user_path(@certificate.user),
-            download: certificate_path(@certificate, format: :pem)
-          }
-        }
-      end
+      format.json
       format.pem do
         send_file(@certificate.path)
       end

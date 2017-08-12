@@ -8,13 +8,13 @@ class LoginController < ApplicationController
       return
     end
 
-    user = User.find_by(email: params[:email])
-    unless user && user.authenticate(params[:password])
+    @user = User.find_by(email: params[:email])
+    unless @user && @user.authenticate(params[:password])
       @error = 'Incorrect username or password'
       render status: 401
       return
     end
-    @apikey, @expires = create_api_key(user)
+    @apikey, @expires = create_api_key(@user)
   end
 
   # Allows a user to extend their API key validity
