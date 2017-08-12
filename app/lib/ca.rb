@@ -44,6 +44,7 @@ class CA
     Certificate.new(
       serial: serial,
       active: true,
+      revoked: false,
       path: cert_path,
       user: user,
       valid_until: csr_cert.not_after
