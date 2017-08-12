@@ -44,3 +44,6 @@ gem 'redis-namespace'
 
 # passenger, because we need to serve this _somehow_
 gem "passenger", ">= 5.0.25", require: "phusion_passenger/rack_handler"
+
+# Make configuration easier and less weird
+gem 'config'

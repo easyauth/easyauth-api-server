@@ -1,0 +1,33 @@
+redis:
+  # Uncomment path to use a socket
+  # all other redis paramaters will be ignored
+  # redis_path: /tmp/redis.sock
+  host: localhost # The hostname for redis
+  port: 6379 # The port redis is running on
+  db: 0 # The redis db to use
+  # Uncomment password if you use authentication.
+  # It's recommended to put this in config/settings.local.yml or an
+  # environment-specific config file like config/settings/development.local.yml
+  # password: password
+
+# CA configuration can be moved to or overridden by an environment-specific 
+# config file if desired
+ca:
+  # The private key used to issue new certificates
+  key_file: /var/easyauth/private/privkey.pem
+  # The CA certificate itself
+  cert_file: /var/easyauth/private/ca.pem
+
+  # The password for an encrypted private key
+  # It's better to use the environment for this:
+  # `export EASYAUTH__CA__KEY_PASSWORD=pass`
+  # key_password: pass
+
+  # The directory where issued certificates are stored
+  store_dir: /var/easyauth/store
+
+  # The location of the certificate revocation list:
+  crl_file: /var/easyauth/crl.pem
+
+  # The location of the file where the last issued serial is kept
+  serial_file: /var/easyauth/serial

@@ -1,15 +1,14 @@
-if !Rails.application.secrets.redis_path.nil?
-  Redis.current = Redis::Namespace.new('easyauth', redis: Redis.new(path: Rails.application.secrets.redis_path))
+if !Settings.redis.path.nil?
+  Redis.current = Redis::Namespace.new('easyauth', redis: Redis.new(path: Settings.redis.path))
 else
-  if defined? Rails.application.secrets.redis_pass
-  	password = Rails.application.secrets.redis_pass
-  else
-  	password = nil
-  end
+  puts "Rails environment: #{Rails.env}"
+  puts "db password: #{Settings.db.pass}"
+  puts "redis host: #{Settings.redis.host}"
+  puts "redis password: #{Settings.redis.password}"
   Redis.current = Redis::Namespace.new('easyauth', redis: Redis.new(
-    host: Rails.application.secrets.redis_host,
-    port: Rails.application.secrets.redis_port,
-    db: Rails.application.secrets.redis_db,
-    password: password
+    host: Settings.redis.host,
+    port: Settings.redis.port,
+    db: Settings.redis.db,
+    password: Settings.redis.password
   ))
 end

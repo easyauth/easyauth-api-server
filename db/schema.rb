@@ -10,18 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170802020932) do
+ActiveRecord::Schema.define(version: 20170812150829) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "certificates", primary_key: "serial", force: :cascade do |t|
-    t.boolean "valid", null: false
+    t.boolean "active", null: false
     t.string "path", null: false
     t.integer "user_id", null: false
     t.datetime "valid_until", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "revoked"
     t.index ["user_id"], name: "index_certificates_on_user_id"
   end
 

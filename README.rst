@@ -33,8 +33,17 @@ Required to properly run the application:
 * Postgresql
 * Redis
 
-You will also need to create your ``secrets.yml`` file to run the server; see
-``config/secrets.yml.example`` for an example.
+Configuration
+=============
+
+There's some configuration required in order to get up and running. You'll
+want to create your secrets.yml with your secret_key_base; see
+config/secrets.yml.example for more information. You also need to define other
+config settings; see config/settings.yml and config/settings/#{Rails.env}.yml 
+for instructions.
+
+Note that you will probably want to create local (i.e. not checked in to git)
+config files, and these should go in config/settings as well.
 
 Installation
 ============
