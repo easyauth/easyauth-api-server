@@ -55,7 +55,7 @@ class UsersController < ApplicationController
   # PATCH/PUT /users/1
   # PATCH/PUT /users/1.json
   def update
-    unless (@apiuser.id == @user.id && !params[:admin].nil?) ||
+    unless (@apiuser.id == @user.id && params[:admin].nil?) ||
            @apiuser.admin?
       render json: {
         status: 'error',
