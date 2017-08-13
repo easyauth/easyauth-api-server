@@ -114,7 +114,9 @@ class UsersController < ApplicationController
       @user.validated = true
       @user.email = validation.new_email if validation.action == EmailValidationsTypes::CHANGE
     end
-    validation.action
+    action = validation.action
+    validation.destroy
+    action
   end
 
   def update_user

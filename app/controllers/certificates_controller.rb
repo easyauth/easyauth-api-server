@@ -25,7 +25,7 @@ class CertificatesController < ApplicationController
     unless @apiuser.admin? || certuser.id == @apiuser.id
       render json: {
         status: 'error',
-        reason: 'Forbidden'
+        error: 'Forbidden'
       }, status: 403
     end
     respond_to do |format|

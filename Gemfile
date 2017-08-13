@@ -48,3 +48,6 @@ gem "passenger", ">= 5.0.25", require: "phusion_passenger/rack_handler"
 
 # Make configuration easier and less weird
 gem 'config'
+
+# because why write validations yourself
+gem 'validates_email_format_of'

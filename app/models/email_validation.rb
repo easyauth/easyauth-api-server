@@ -1,6 +1,7 @@
 # Store validation codes for emails, etc
 class EmailValidation < ApplicationRecord
   belongs_to :user
+  validates_email_format_of :new_email, allow_blank: true
 
   def self.generate(user, type, new_email = nil)
     require 'securerandom'
@@ -12,7 +13,7 @@ class EmailValidation < ApplicationRecord
       new_email: new_email
     )
     validation.save
-    ValidationMailer.welcome_email(user, validation)
+    ValidationMailer.welcome_email(user, validation).deliver
   end
 end
 
