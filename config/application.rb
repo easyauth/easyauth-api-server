@@ -30,10 +30,10 @@ module Server
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
     config.cache_store = :redis_store, {
-      host: 'localhost',
-      port: 6379,
-      db: 0,
-      password: 'secret',
+      host: Settings.redis.host,
+      port: Settings.redis.port,
+      db: Settings.redis.db,
+      password: Settings.redis.password,
       namespace: 'cache'
     }, {
       expire_after: 90.minutes

@@ -41,6 +41,7 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 # redis, for sharing ephemeral data between front- and backend
 gem 'redis'
 gem 'redis-namespace'
+gem 'redis-rails'
 
 # passenger, because we need to serve this _somehow_
 gem "passenger", ">= 5.0.25", require: "phusion_passenger/rack_handler"
