@@ -144,6 +144,8 @@ GEM
     thread_safe (0.3.6)
     tzinfo (1.2.3)
       thread_safe (~> 0.1)
+    validates_email_format_of (1.6.3)
+      i18n
     websocket-driver (0.6.5)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.2)
@@ -167,6 +169,7 @@ DEPENDENCIES
   spring
   spring-watcher-listen (~> 2.0.0)
   tzinfo-data
+  validates_email_format_of
 
 BUNDLED WITH
    1.15.3
