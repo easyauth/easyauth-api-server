@@ -1,5 +1,6 @@
 # Handles logging in and extending API key validity
 class LoginController < ApplicationController
+  before_action :set_default_request_format
   # Allows a user to log in
   def login
     if params[:email].nil? || params[:password].nil?
