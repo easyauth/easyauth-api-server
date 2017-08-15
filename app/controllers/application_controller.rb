@@ -23,9 +23,9 @@ class ApplicationController < ActionController::API
       end
     end
     @apiuser_is_public = false
-    api_user_id = validate_api_key(params[:apikey])
-    if api_user_id && User.exists?(api_user_id)
-      @apiuser = User.find(api_user_id)
+    api_user = validate_api_key(params[:apikey])
+    if api_user
+      @apiuser = api_user
     else
       delete_api_key(params[:apikey])
       render json: {
@@ -36,7 +36,7 @@ class ApplicationController < ActionController::API
   end
 
   def forbid_public_user
-    return unless @apiuser_is_public
+    return unless @apiuser_is_public || @apiuser.is_a?(ApiKeyUser)
     render json: {
         status: 'error',
         error: 'Forbidden'

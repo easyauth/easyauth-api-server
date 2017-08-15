@@ -2,7 +2,8 @@ class ApiKeyUsersController < ApplicationController
   before_action :set_user, only: %i[show update destroy]
   before_action :require_auth, only: %i[index show update destroy]
   before_action :set_default_request_format
-  before_action :forbid_public_user
+  before_action :forbid_public_user, only: %i[index]
+  before_action :forbid_other_public_user, except: %i[index create]
 
   def index
     unless @apiuser.admin?
@@ -16,14 +17,7 @@ class ApiKeyUsersController < ApplicationController
              end
   end
 
-  def show
-    unless @apiuser == @user || @apiuser.admin?
-      render json: {
-        status: 'error',
-        error: 'Forbidden'
-      }, status: 403
-    end
-  end
+  def show; end
 
   def create
     require 'securerandom'
@@ -61,11 +55,11 @@ class ApiKeyUsersController < ApplicationController
 
     update_user
 
-    if (defined? @action) && @action == EmailValidationsTypes::DELETE
-      validations = ApiEmailValidation.where(user: @user)
+    if (defined? @action) && @action == EmailValidationsTypes::API_DELETE
+      validations = ApiEmailValidation.where(api_key_user: @user)
       validations.each(&:destroy)
       @user.destroy
-    elif @user.save
+    elsif @user.save
       render :show, status: if params[:email].nil?
                               :ok
                             else
@@ -83,15 +77,25 @@ class ApiKeyUsersController < ApplicationController
         error: 'Forbidden'
       }, status: 403
     end
-    ApiEmailValidation.generate(@user, EmailValidationsTypes::DELETE)
+    ApiEmailValidation.generate(@user, EmailValidationsTypes::API_DELETE)
     render :show, status: :accepted, location: @user
   end
 
   private
 
+  def forbid_other_public_user
+    return unless @apiuser_is_public
+    return if (@apiuser.is_a? ApiKeyUser && @apiuser.id == @user.id) ||
+              (@apiuser.is_a? User && @apiuser.admin?)
+    render json: {
+        status: 'error',
+        error: 'Forbidden'
+    }, status: 403
+  end
+
   def validate_user
     validation = ApiEmailValidation.find_by(code: params[:validation_code])
-    if validation.nil? || validation.user != @apiuser
+    if validation.nil? || validation.api_key_user != @apiuser
       render json: {
         status: 'error', error: 'Bad validation code'
       }, status: 422
@@ -101,7 +105,7 @@ class ApiKeyUsersController < ApplicationController
     if validation.action == EmailValidationsTypes::API_CREATE ||
        validation.action == EmailValidationsTypes::API_CHANGE
       @user.validated = true
-      @user.email = validation.new_email if validation.action == EmailValidationsTypes::CHANGE
+      @user.email = validation.new_email if validation.action == EmailValidationsTypes::API_CHANGE
     end
     action = validation.action
     validation.destroy
@@ -109,7 +113,7 @@ class ApiKeyUsersController < ApplicationController
   end
 
   def update_user
-    ApiEmailValidation.generate(@user, EmailValidationsTypes::CHANGE, params[:email]) unless params[:email].nil?
+    ApiEmailValidation.generate(@user, EmailValidationsTypes::API_CHANGE, params[:email]) unless params[:email].nil?
     @user.password = params[:password] unless params[:password].nil?
   end
 

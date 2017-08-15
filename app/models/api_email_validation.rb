@@ -5,7 +5,7 @@ class ApiEmailValidation < ApplicationRecord
     require 'securerandom'
     code = SecureRandom.hex(8)
     validation = ApiEmailValidation.new(
-      user: user,
+      api_key_user: user,
       code: code,
       action: type,
       new_email: new_email
@@ -13,10 +13,12 @@ class ApiEmailValidation < ApplicationRecord
     validation.save
     mailer = case type
              when EmailValidationsTypes::API_CREATE
-              ValidationMailer.api_welcome_email(user, validation)
+               ValidationMailer.api_welcome_email(user, validation)
+             when EmailValidationsTypes::API_CHANGE
+               ValidationMailer.api_update_email(user, validation)
              when EmailValidationsTypes::API_DELETE
-              ValidationMailer.api_update_email(user, validation)
+               ValidationMailer.api_goodbye_email(user, validation)
              end
-    ValidationMailer.welcome_email(user, validation).deliver
+    mailer.deliver
   end
 end
