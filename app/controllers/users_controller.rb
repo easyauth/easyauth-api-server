@@ -3,10 +3,7 @@ class UsersController < ApplicationController
   before_action :set_user, only: %i[show update destroy]
   before_action :require_auth, only: %i[index show update destroy]
   before_action :set_default_request_format
-
-  def set_default_request_format
-    request.format = :json unless params[:format]
-  end
+  before_action :forbid_public_user, except: %i[show]
 
   # GET /users
   # GET /users.json
@@ -25,7 +22,7 @@ class UsersController < ApplicationController
   # GET /users/1
   # GET /users/1.json
   def show
-    unless @apiuser.id == @user.id || @apiuser.admin?
+    unless @apiuser_is_public || @apiuser == @user || @apiuser.admin?
       render json: {
         status: 'error',
         error: 'Forbidden'
@@ -55,7 +52,7 @@ class UsersController < ApplicationController
   # PATCH/PUT /users/1
   # PATCH/PUT /users/1.json
   def update
-    unless (@apiuser.id == @user.id && params[:admin].nil?) ||
+    unless (@apiuser == @user && params[:admin].nil?) ||
            @apiuser.admin?
       render json: {
         status: 'error',
@@ -73,6 +70,8 @@ class UsersController < ApplicationController
     if (defined? @action) && @action == EmailValidationsTypes::DELETE
       validations = EmailValidation.where(user: @user)
       validations.each(&:destroy)
+      certificates = Certificate.where(user: @user)
+      certificates.each(&:destroy)
       @user.destroy
     elsif @user.save
       render :show, status: if params[:email].nil?
@@ -88,7 +87,7 @@ class UsersController < ApplicationController
   # DELETE /users/1
   # DELETE /users/1.json
   def destroy
-    unless @apiuser.id == @user.id || @apiuser.admin?
+    unless @apiuser == @user || @apiuser.admin?
       render json: {
         status: 'error',
         error: 'Forbidden'
@@ -102,7 +101,7 @@ class UsersController < ApplicationController
 
   def validate_user
     validation = EmailValidation.find_by(code: params[:validation_code])
-    if validation.nil? || validation.user.id != @apiuser.id
+    if validation.nil? || validation.user != @apiuser
       render json: {
         status: 'error', error: 'Bad validation code'
       }, status: 422

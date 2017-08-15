@@ -5,10 +5,7 @@ class CertificatesController < ApplicationController
   before_action :require_auth, only: %i[show create update destroy]
   before_action :check_current_cert, only: %i[create]
   before_action :set_certificate, only: %i[show update destroy]
-
-  def set_default_request_format
-    request.format = :json unless params[:format]
-  end
+  before_action :forbid_public_user, except: %i[show]
 
   # GET /certificates
   # GET /certificates.json
@@ -22,7 +19,7 @@ class CertificatesController < ApplicationController
   # GET /certificates/1.json
   def show
     certuser = @certificate.user
-    unless @apiuser.admin? || certuser.id == @apiuser.id
+    unless @apiuser_is_public || @apiuser.admin? || certuser == @apiuser
       render json: {
         status: 'error',
         error: 'Forbidden'
@@ -31,7 +28,7 @@ class CertificatesController < ApplicationController
     respond_to do |format|
       format.json
       format.pem do
-        send_file(@certificate.path)
+        send_file(@certificate.path) unless @apiuser_is_public
       end
     end
   end

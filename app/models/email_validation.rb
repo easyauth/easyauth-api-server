@@ -13,12 +13,13 @@ class EmailValidation < ApplicationRecord
       new_email: new_email
     )
     validation.save
+    mailer = case type
+             when EmailValidationsTypes::CREATE
+              ValidationMailer.welcome_email(user, validation)
+             when EmailValidationsTypes::CHANGE
+              ValidationMailer.update_email(user, validation)
+             when EmailValidationsTypes::DELETE
+              ValidationMailer.goodbye_email(user, validation)
     ValidationMailer.welcome_email(user, validation).deliver
   end
-end
-
-module EmailValidationsTypes
-  CREATE = 1
-  CHANGE = 2
-  DELETE = 3
 end
