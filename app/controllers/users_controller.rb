@@ -128,11 +128,11 @@ class UsersController < ApplicationController
   def set_user
     @user = User.find(params[:id])
     results = Certificate.where(user: @user, active: true)
-    @certificate = if results.any?
-                     certificate_url(results.first)
-                   else
-                     nil
-                   end
+    if results.any?
+      cert = results.first
+      @certificate_id = cert.id
+      @certificate_url = certificate_url(cert)
+    end
   end
 
   def redis
