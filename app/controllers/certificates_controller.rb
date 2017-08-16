@@ -50,8 +50,8 @@ class CertificatesController < ApplicationController
   # PATCH/PUT /certificates/1
   # PATCH/PUT /certificates/1.json
   def update
-    render json: {status: 'error', reason: 'Invalid Certificate'}, status: 422 and return unless @certificate.active?
-    render json: {status: 'error', reason: 'Bad parameters'}, status: 422 and return unless params[:valid] == "false"
+    render json: {status: 'error', error: 'Invalid Certificate'}, status: 422 and return unless @certificate.active?
+    render json: {status: 'error', error: 'Bad parameters'}, status: 422 and return unless params[:valid] == "false"
 
     if @certificate.update(active: false, revoked: true, valid_until: Time.now)
       render :show, status: :ok, location: @certificate
@@ -69,7 +69,7 @@ class CertificatesController < ApplicationController
     else
       render json: {
         status: 'error',
-        reason: 'forbidden'
+        error: 'forbidden'
       }, status: :forbidden
     end
   end
@@ -82,7 +82,7 @@ class CertificatesController < ApplicationController
     return unless results.exists?
     render json: {
       status: 'error',
-      reason: 'Unrevoked certificate',
+      error: 'Unrevoked certificate',
       revoke_url: url_for(results.first)
     }, status: :unprocessable_entity
   end
