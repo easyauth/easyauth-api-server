@@ -51,7 +51,7 @@ class CertificatesController < ApplicationController
   # PATCH/PUT /certificates/1.json
   def update
     render json: {status: 'error', error: 'Invalid Certificate'}, status: 422 and return unless @certificate.active?
-    render json: {status: 'error', error: 'Bad parameters'}, status: 422 and return unless params[:valid] == "false"
+    render json: {status: 'error', error: 'Bad parameters'}, status: 422 and return unless params[:valid].to_s == "false"
 
     if @certificate.update(active: false, revoked: true, valid_until: Time.now)
       render :show, status: :ok, location: @certificate
