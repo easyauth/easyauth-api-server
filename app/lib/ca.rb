@@ -24,6 +24,7 @@ class CA
     csr_cert.not_before = Time.now
     csr_cert.not_after = 1.year.from_now
     csr_cert.subject = csr_name
+    csr_cert.public_key = csr.public_key
     csr_cert.issuer = @ca_cert.subject
 
     extension_factory = OpenSSL::X509::ExtensionFactory.new
