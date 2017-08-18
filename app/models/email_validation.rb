@@ -21,6 +21,6 @@ class EmailValidation < ApplicationRecord
              when EmailValidationsTypes::DELETE
               ValidationMailer.goodbye_email(user, validation)
             end
-    ValidationMailer.welcome_email(user, validation).deliver
+    mailer.deliver
   end
 end
